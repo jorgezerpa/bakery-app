@@ -1,13 +1,18 @@
 import { commonStyles } from '@/styles/common';
 import { formatTime } from '@/utils/formatDate';
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { WatchTitle } from './WatchTitle';
 
 export const Timer = () => {
 
-  const initialTime = 3600; // Start from 60 seconds
-  const [title, setTitle] = useState("Timer");
+  const [initialTime, setInitialTime] = useState(0);
+  const [virtualInitialTime, setVirtualInitialTime] = useState({
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  })
+  const [title, setTitle] = useState("");
   const [time, setTime] = useState(initialTime);
   const [running, setRunning] = useState(false);
   const intervalRef = useRef<number>(null);
@@ -62,33 +67,60 @@ export const Timer = () => {
 
   return (
       <>
-          <WatchTitle title={title} setTitle={setTitle}  />
-          <View style={{ justifyContent:"space-between" }}>
-              <View style={{ backgroundColor:"white", }}>
-                <Text style={{...commonStyles.watchTime}}>
-                  { formatTime(time) }
-                </Text>
+          <WatchTitle title={title} setTitle={setTitle} />
+          {
+            initialTime === 0 && (
+              <View>
+                <View style={{ flexDirection:"row", gap:5 }}>
+                  <TextInput style={{...commonStyles.watchTitle, borderBottomColor:"#ccc", borderBottomWidth:1 }} keyboardType='numeric' placeholder='HH' value={virtualInitialTime.hours>0?(virtualInitialTime.hours||0).toString():""} onChangeText={(t)=>setVirtualInitialTime({ ...virtualInitialTime, hours: parseInt(t) })} />
+                  <TextInput style={{...commonStyles.watchTitle, borderBottomColor:"#ccc", borderBottomWidth:1 }} keyboardType='numeric' placeholder='MM' value={virtualInitialTime.minutes>0?(virtualInitialTime.minutes||0).toString():""} onChangeText={(t)=>setVirtualInitialTime({ ...virtualInitialTime, minutes: parseInt(t) })} />
+                  <TextInput style={{...commonStyles.watchTitle, borderBottomColor:"#ccc", borderBottomWidth:1 }} keyboardType='numeric' placeholder='SS' value={virtualInitialTime.seconds>0?(virtualInitialTime.seconds||0).toString():""} onChangeText={(t)=>setVirtualInitialTime({ ...virtualInitialTime, seconds: parseInt(t) })} />
+                </View>
+                  <TouchableOpacity
+                    onPress={()=>{
+                      const hoursToSeconds = (virtualInitialTime.hours||0) * 3600
+                      const minutesToSeconds = (virtualInitialTime.minutes||0) * 60
+                      const totalSeconds = hoursToSeconds + minutesToSeconds + virtualInitialTime.seconds
+                      setInitialTime(totalSeconds)
+                      setTime(totalSeconds)
+                      setVirtualInitialTime({ hours:0, minutes: 0, seconds: 0 })
+                    }}
+                  >
+                    <Text>aceptar</Text>
+                  </TouchableOpacity>
               </View>
-              <View style={{ ...commonStyles.watchButtonsWrapper }}>
-                {
-                  running &&
-                      <TouchableOpacity onPress={pauseTimer} style={{ ...commonStyles.watchButton }}>
-                          <Text>Stop</Text>
-                      </TouchableOpacity>
-                }
-                {
-                  !running &&
-                    <>
-                      <TouchableOpacity onPress={time===0?startTimer:resumeTimer} style={{ ...commonStyles.watchButton }}>
-                          <Text>{time===initialTime?"Iniciar":"continuar"}</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={resetTimer} style={{ ...commonStyles.watchButton }}>
-                          <Text>Reiniciar</Text>
-                      </TouchableOpacity>
-                    </>
-                }
+            )
+          }
+          {
+            initialTime !== 0 && (
+              <View style={{ justifyContent:"space-between" }}>
+                  <View style={{ backgroundColor:"white", }}>
+                    <Text style={{...commonStyles.watchTime}}>
+                      { formatTime(time) }
+                    </Text>
+                  </View>
+                  <View style={{ ...commonStyles.watchButtonsWrapper }}>
+                    {
+                      running &&
+                          <TouchableOpacity onPress={pauseTimer} style={{ ...commonStyles.watchButton }}>
+                              <Text>Stop</Text>
+                          </TouchableOpacity>
+                    }
+                    {
+                      !running &&
+                        <>
+                          <TouchableOpacity onPress={time===0?startTimer:resumeTimer} style={{ ...commonStyles.watchButton }}>
+                              <Text>{time===initialTime?"Iniciar":"continuar"}</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity onPress={resetTimer} style={{ ...commonStyles.watchButton }}>
+                              <Text>Reiniciar</Text>
+                          </TouchableOpacity>
+                        </>
+                    }
+                  </View>
               </View>
-          </View>
+            )
+          }
       </>
   )
 }
