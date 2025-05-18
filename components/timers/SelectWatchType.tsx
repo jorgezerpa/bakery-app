@@ -1,3 +1,4 @@
+import { commonStyles } from '@/styles/common';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
@@ -8,12 +9,12 @@ interface SelectWatchTypeProps {
 export const SelectWatchType = ({handleSetWatch}:SelectWatchTypeProps) => {
   return (
       <>
-        <View style={{ backgroundColor:"white", height:50, justifyContent:"space-between" }}>
+        <View style={{ flex:1, justifyContent:"center", alignItems:"center", gap:20 }}>
           <TouchableOpacity onPress={()=>handleSetWatch("chrono")}>
-              <Text>Chrono</Text>
+              <Text style={{ ...commonStyles.watchTitle, textAlign:"center" }}>Cronometro</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={()=>handleSetWatch("timer")}>
-              <Text>Timer</Text>
+              <Text style={{ ...commonStyles.watchTitle, textAlign:"center" }}>Temporizador</Text>
           </TouchableOpacity>
         </View> 
       </>
