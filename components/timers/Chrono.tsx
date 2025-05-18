@@ -56,8 +56,11 @@ export const Chrono = () => {
   return (
       <>
           <WatchTitle title={title} setTitle={setTitle}  />
-          <View style={{ justifyContent:"space-between" }}>
+          <View style={{ justifyContent:"space-between", alignItems:"flex-end" }}>
               <View style={{ backgroundColor:"white", }}>
+                <Text style={{ fontSize:12, textAlign:"right" }}>
+                      cronometro
+                </Text>
                 <Text style={{ ...commonStyles.watchTime }}>
                   { formatTime(time) }
                 </Text>
@@ -65,18 +68,21 @@ export const Chrono = () => {
               <View style={{ ...commonStyles.watchButtonsWrapper }}>
                 {
                   running &&
-                      <TouchableOpacity onPress={pauseStopwatch} style={{ ...commonStyles.watchButton }}>
-                          <Text style={{ ...commonStyles.watchButtonText }}>Stop</Text>
+                      <TouchableOpacity onPress={pauseStopwatch} style={{ ...commonStyles.watchButton, backgroundColor:"#0b5edb" }}>
+                          <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>Stop</Text>
                       </TouchableOpacity>
                 }
                 {
                   !running &&
                     <>
-                      <TouchableOpacity style={{ ...commonStyles.watchButton }} onPress={time===0?startStopwatch:resumeStopwatch}>
-                          <Text style={{ ...commonStyles.watchButtonText }}>{time===0?"Iniciar":"continuar"}</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={resetStopwatch} style={{ ...commonStyles.watchButton }}>
-                          <Text style={{ ...commonStyles.watchButtonText }}>Reiniciar</Text>
+                      {
+                        time !== 0 && 
+                          <TouchableOpacity onPress={resetStopwatch} style={{ ...commonStyles.watchButton, backgroundColor:"#ca0404" }}>
+                              <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>Reiniciar</Text>
+                          </TouchableOpacity>
+                      }
+                      <TouchableOpacity style={{ ...commonStyles.watchButton, backgroundColor:"#2501c9" }} onPress={time===0?startStopwatch:resumeStopwatch}>
+                          <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>{time===0?"Iniciar":"continuar"}</Text>
                       </TouchableOpacity>
                     </>
                 }

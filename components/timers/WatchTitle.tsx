@@ -11,7 +11,7 @@ export const WatchTitle = ({setTitle, title}:WatchTitleProps) => {
 
     return (
       <View>
-        <TextInput style={{...commonStyles.watchTitle, maxWidth: 150, paddingHorizontal:10 }} value={title} onChangeText={(t)=>setTitle(t)} placeholder='nombre' placeholderTextColor={"#ccc"} />
+        <TextInput style={{...commonStyles.watchTitle, fontWeight:"800", maxWidth: 150, paddingHorizontal:10 }} value={title} onChangeText={(t)=>setTitle(t)} placeholder='nombre' placeholderTextColor={"#ccc"} />
       </View>
     )
 

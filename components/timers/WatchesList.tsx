@@ -25,10 +25,11 @@ export const WatchesList = () => {
   return (
     <>
       <ScrollView>
+        <Text style={{ textAlign:"center", fontSize:30, fontWeight:"600", marginBottom:30, marginTop:10 }}>Time tracking</Text>
         {
           watches.length === 0 && (
             <View style={{ height:350, justifyContent:"center", alignItems:"center", gap:0, paddingHorizontal:20 }}>
-              <MaterialIcons size={100} color={"#333"} name='watch-later' />
+              {/* <MaterialIcons size={100} color={"#333"} name='watch-later' /> */}
               <Text style={{ textAlign:"center", color:"#666", fontSize:20 }}>
                 dale click al boton de agregar para iniciar un reloj.
               </Text>
@@ -38,16 +39,13 @@ export const WatchesList = () => {
         {
           watches.map((w, i) => (
             <View style={ styles.item } key={w.id} >
-              <WatchItem/>
-              <TouchableOpacity style={{ top: -30, left: 10, width: 30 }} onPress={()=>handleDeleteWatch(w.id)}>
-                <MaterialIcons size={25} color={"#000"} name='delete-outline' />
-              </TouchableOpacity>
+              <WatchItem id={w.id} handleDeleteWatch={handleDeleteWatch}/>
             </View>          
           ))
         }
         <View style={{ alignItems:"center" }}>
           <TouchableOpacity onPress={handleAddWatch} style={{ alignItems:"center" }}>
-            <MaterialIcons size={60} color={"#000"} name='add-circle' />
+            <MaterialIcons size={70} color={"#000"} name='add-circle' />
             <Text>Agregar</Text>
           </TouchableOpacity>
         </View>
@@ -65,7 +63,7 @@ const styles = StyleSheet.create({
   item: {
     padding:5,
     width: "100%",
-    minHeight: 170,
+    minHeight: 150,
     display:"flex", 
     justifyContent:"space-between",
   }

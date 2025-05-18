@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 
 export const commonStyles = StyleSheet.create({
   watchButton: {
-    paddingHorizontal:5,
+    paddingHorizontal:7,
     paddingVertical: 5, 
     backgroundColor:"#ccc",
     borderRadius: 7,

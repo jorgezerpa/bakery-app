@@ -89,15 +89,20 @@ export const Timer = () => {
                       setVirtualInitialTime({ hours:0, minutes: 0, seconds: 0 })
                     }}
                   >
-                    <Text style={{ fontSize:16, paddingHorizontal:5, paddingVertical:5, backgroundColor:"#ccc", borderRadius:3, textAlign:"center", textAlignVertical:"center", marginTop:15  }}>aceptar</Text>
+                    <Text style={{ fontSize:16, paddingHorizontal:5, paddingVertical:5, color:"#fefefe", backgroundColor:"#0ebced", borderRadius:5, textAlign:"center", textAlignVertical:"center", marginTop:15  }}>
+                      aceptar
+                    </Text>
                   </TouchableOpacity>
               </View>
             )
           }
           {
             initialTime !== 0 && (
-              <View style={{ justifyContent:"space-between" }}>
-                  <View style={{ backgroundColor:"white", }}>
+              <View style={{ justifyContent:"space-between", alignItems:"flex-end" }}>
+                  <View style={{ backgroundColor:"white" }}>
+                    <Text style={{ fontSize:12, textAlign:"right" }}>
+                          temporizador
+                    </Text>
                     <Text style={{...commonStyles.watchTime}}>
                       { formatTime(time) }
                     </Text>
@@ -111,18 +116,21 @@ export const Timer = () => {
                   <View style={{ ...commonStyles.watchButtonsWrapper }}>
                     {
                       running &&
-                          <TouchableOpacity onPress={pauseTimer} style={{ ...commonStyles.watchButton }}>
-                              <Text style={{ ...commonStyles.watchButtonText }}>Stop</Text>
+                          <TouchableOpacity onPress={pauseTimer} style={{ ...commonStyles.watchButton, backgroundColor:"#0b5edb" }}>
+                              <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>Stop</Text>
                           </TouchableOpacity>
                     }
                     {
                       !running &&
                         <>
-                          <TouchableOpacity onPress={time===0?startTimer:resumeTimer} style={{ ...commonStyles.watchButton }}>
-                              <Text style={{ ...commonStyles.watchButtonText }}>{time===initialTime?"Iniciar":"continuar"}</Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity onPress={resetTimer} style={{ ...commonStyles.watchButton }}>
-                              <Text style={{ ...commonStyles.watchButtonText }}>Reiniciar</Text>
+                          {
+                            time !== initialTime &&
+                            <TouchableOpacity onPress={resetTimer} style={{ ...commonStyles.watchButton, backgroundColor:"#ca0404" }}>
+                                <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>Reiniciar</Text>
+                            </TouchableOpacity>
+                          }
+                          <TouchableOpacity onPress={time===0?startTimer:resumeTimer} style={{ ...commonStyles.watchButton, backgroundColor:"#2501c9" }}>
+                              <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>{time===initialTime?"Iniciar":"continuar"}</Text>
                           </TouchableOpacity>
                         </>
                     }
