@@ -40,8 +40,7 @@ export const Chrono = () => {
     };
 
   return (
-    <View style={styles.item}>
-      <View style={{ borderColor:"#ccc", borderWidth:1, flex:1 }}>
+      <>
           <Text style={styles.title}>{title}</Text>
           <View>
               <View style={{ backgroundColor:"white", height:100 }}>
@@ -69,18 +68,11 @@ export const Chrono = () => {
                 }
               </View>
           </View>
-      </View>
-    </View>
+      </>
   )
 }
 
 const styles = StyleSheet.create({
-  item: {
-    padding:5,
-    width: "50%",
-    height: 250,
-    display:"flex", justifyContent:"space-between",
-  },
   title: {
     fontSize: 20,
   },
