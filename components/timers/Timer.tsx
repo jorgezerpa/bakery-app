@@ -1,5 +1,5 @@
 import { commonStyles } from '@/styles/common';
-import { formatTime } from '@/utils/formatDate';
+import { convertTimestampToMilitaryTime, formatTime } from '@/utils/formatDate';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { WatchTitle } from './WatchTitle';
@@ -98,6 +98,12 @@ export const Timer = () => {
                     <Text style={{...commonStyles.watchTime}}>
                       { formatTime(time) }
                     </Text>
+                    {
+                      running && 
+                        <Text style={{ fontSize:12 }}>
+                          Finaliza a las { convertTimestampToMilitaryTime((Date.now()/1000) + time) }
+                        </Text>
+                    }
                   </View>
                   <View style={{ ...commonStyles.watchButtonsWrapper }}>
                     {
