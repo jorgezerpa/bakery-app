@@ -13,7 +13,7 @@ export const WatchItem = () => {
   }
 
   return (
-      <View style={{ borderColor:"#ccc", borderWidth:1, flex:1, flexDirection:"row", justifyContent:"space-between", padding:5 }}>
+      <View style={{ borderRadius:10, borderColor:"#ccc", borderWidth:1, flex:1, flexDirection:"row", justifyContent:"space-between", padding:5 }}>
         { type===null && <SelectWatchType handleSetWatch={handleSetWatch} /> }
         { type==="chrono" && <Chrono /> } 
         { type==="timer" && <Timer /> }

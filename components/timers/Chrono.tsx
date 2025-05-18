@@ -6,7 +6,7 @@ import { WatchTitle } from './WatchTitle';
 
 export const Chrono = () => {
 
-  const [title, setTitle] = useState("Title")
+  const [title, setTitle] = useState("")
   const [time, setTime] = useState(0)
   const [running, setRunning] = useState(false)
   const intervalRef = useRef<number>(null)
@@ -66,17 +66,17 @@ export const Chrono = () => {
                 {
                   running &&
                       <TouchableOpacity onPress={pauseStopwatch} style={{ ...commonStyles.watchButton }}>
-                          <Text>Stop</Text>
+                          <Text style={{ ...commonStyles.watchButtonText }}>Stop</Text>
                       </TouchableOpacity>
                 }
                 {
                   !running &&
                     <>
                       <TouchableOpacity style={{ ...commonStyles.watchButton }} onPress={time===0?startStopwatch:resumeStopwatch}>
-                          <Text>{time===0?"Iniciar":"continuar"}</Text>
+                          <Text style={{ ...commonStyles.watchButtonText }}>{time===0?"Iniciar":"continuar"}</Text>
                       </TouchableOpacity>
                       <TouchableOpacity onPress={resetStopwatch} style={{ ...commonStyles.watchButton }}>
-                          <Text>Reiniciar</Text>
+                          <Text style={{ ...commonStyles.watchButtonText }}>Reiniciar</Text>
                       </TouchableOpacity>
                     </>
                 }

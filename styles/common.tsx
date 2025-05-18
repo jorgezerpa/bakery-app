@@ -8,6 +8,9 @@ export const commonStyles = StyleSheet.create({
     backgroundColor:"#ccc",
     borderRadius: 7,
   },
+  watchButtonText: {
+    fontSize:16
+  },
   watchTitle: {
     fontSize: 20
   },

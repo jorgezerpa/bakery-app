@@ -77,6 +77,9 @@ export const Timer = () => {
                   <TextInput style={{...commonStyles.watchTitle, borderBottomColor:"#ccc", borderBottomWidth:1 }} keyboardType='numeric' placeholder='SS' value={virtualInitialTime.seconds>0?(virtualInitialTime.seconds||0).toString():""} onChangeText={(t)=>setVirtualInitialTime({ ...virtualInitialTime, seconds: parseInt(t) })} />
                 </View>
                   <TouchableOpacity
+                    style={{
+                      alignItems:"flex-end"
+                    }}
                     onPress={()=>{
                       const hoursToSeconds = (virtualInitialTime.hours||0) * 3600
                       const minutesToSeconds = (virtualInitialTime.minutes||0) * 60
@@ -86,7 +89,7 @@ export const Timer = () => {
                       setVirtualInitialTime({ hours:0, minutes: 0, seconds: 0 })
                     }}
                   >
-                    <Text>aceptar</Text>
+                    <Text style={{ fontSize:16, paddingHorizontal:5, paddingVertical:5, backgroundColor:"#ccc", borderRadius:3, textAlign:"center", textAlignVertical:"center", marginTop:15  }}>aceptar</Text>
                   </TouchableOpacity>
               </View>
             )
@@ -109,17 +112,17 @@ export const Timer = () => {
                     {
                       running &&
                           <TouchableOpacity onPress={pauseTimer} style={{ ...commonStyles.watchButton }}>
-                              <Text>Stop</Text>
+                              <Text style={{ ...commonStyles.watchButtonText }}>Stop</Text>
                           </TouchableOpacity>
                     }
                     {
                       !running &&
                         <>
                           <TouchableOpacity onPress={time===0?startTimer:resumeTimer} style={{ ...commonStyles.watchButton }}>
-                              <Text>{time===initialTime?"Iniciar":"continuar"}</Text>
+                              <Text style={{ ...commonStyles.watchButtonText }}>{time===initialTime?"Iniciar":"continuar"}</Text>
                           </TouchableOpacity>
                           <TouchableOpacity onPress={resetTimer} style={{ ...commonStyles.watchButton }}>
-                              <Text>Reiniciar</Text>
+                              <Text style={{ ...commonStyles.watchButtonText }}>Reiniciar</Text>
                           </TouchableOpacity>
                         </>
                     }
