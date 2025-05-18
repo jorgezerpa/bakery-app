@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/adaptive-icon2.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.zerpacode.OvenFlow"
     },
     "web": {
       "bundler": "metro",
@@ -37,6 +38,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "eb0abc78-bf8d-4149-9956-04f5b0198aa6"
+      }
     }
   }
 }
