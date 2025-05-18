@@ -2,6 +2,7 @@ import { commonStyles } from '@/styles/common';
 import { formatTime } from '@/utils/formatDate';
 import React, { useEffect, useRef, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { WatchTitle } from './WatchTitle';
 
 export const Chrono = () => {
 
@@ -54,7 +55,7 @@ export const Chrono = () => {
 
   return (
       <>
-          <Text style={commonStyles.watchTitle}>{title}</Text>
+          <WatchTitle title={title} setTitle={setTitle}  />
           <View style={{ justifyContent:"space-between" }}>
               <View style={{ backgroundColor:"white", }}>
                 <Text style={{ ...commonStyles.watchTime }}>
