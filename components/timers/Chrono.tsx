@@ -1,6 +1,7 @@
+import { commonStyles } from '@/styles/common';
 import { formatTime } from '@/utils/formatDate';
-import React, { useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 export const Chrono = () => {
 
@@ -39,29 +40,41 @@ export const Chrono = () => {
         setRunning(true);
     };
 
+     // useEffect for cleanup when the component unmounts
+    useEffect(() => {
+      // This return function will be called when the component unmounts
+      return () => {
+        if (intervalRef.current !== null) {
+          clearInterval(intervalRef.current);
+          console.log('watch unmounted: Timer cleared!');
+        }
+      };
+    }, []); // The empty dependency array ensures this effect runs only once on mount and once on unmount.
+
+
   return (
       <>
-          <Text style={styles.title}>{title}</Text>
-          <View>
-              <View style={{ backgroundColor:"white", height:100 }}>
-                <Text>
+          <Text style={commonStyles.watchTitle}>{title}</Text>
+          <View style={{ justifyContent:"space-between" }}>
+              <View style={{ backgroundColor:"white", }}>
+                <Text style={{ ...commonStyles.watchTime }}>
                   { formatTime(time) }
                 </Text>
               </View>
-              <View style={{ backgroundColor:"white", height:50, justifyContent:"space-between" }}>
+              <View style={{ ...commonStyles.watchButtonsWrapper }}>
                 {
                   running &&
-                      <TouchableOpacity onPress={pauseStopwatch}>
+                      <TouchableOpacity onPress={pauseStopwatch} style={{ ...commonStyles.watchButton }}>
                           <Text>Stop</Text>
                       </TouchableOpacity>
                 }
                 {
                   !running &&
                     <>
-                      <TouchableOpacity onPress={time===0?startStopwatch:resumeStopwatch}>
+                      <TouchableOpacity style={{ ...commonStyles.watchButton }} onPress={time===0?startStopwatch:resumeStopwatch}>
                           <Text>{time===0?"Iniciar":"continuar"}</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity onPress={resetStopwatch}>
+                      <TouchableOpacity onPress={resetStopwatch} style={{ ...commonStyles.watchButton }}>
                           <Text>Reiniciar</Text>
                       </TouchableOpacity>
                     </>
@@ -72,8 +85,3 @@ export const Chrono = () => {
   )
 }
 
-const styles = StyleSheet.create({
-  title: {
-    fontSize: 20,
-  },
-});

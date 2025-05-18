@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { WatchItem } from './WatchItem';
-
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'First Item',
-  },
-];
 
 interface WatchType {
   id: string
@@ -21,16 +14,26 @@ export const WatchesList = () => {
     setWatches([...watches, newWatch]) 
   }
 
+  const handleDeleteWatch = (idToDelete: string) => {
+    setWatches((prev) => 
+      prev.filter((item) => item.id !== idToDelete)
+    );
+  }
+
   return (
     <>
-      <FlatList
-          columnWrapperStyle={{ backgroundColor:"white" }}
-        data={watches}
-        numColumns={2}
-        renderItem={({item}) => <WatchItem />}
-        // renderItem={({item}) => <Timer />}
-        keyExtractor={item => item.id}
-      />
+      <ScrollView>
+        {
+          watches.map((w, i) => (
+            <View style={ styles.item } key={w.id} >
+              <WatchItem/>
+              <TouchableOpacity onPress={()=>handleDeleteWatch(w.id)}>
+                <Text>borrar</Text>
+              </TouchableOpacity>
+            </View>          
+          ))
+        }
+      </ScrollView>
       <View style={{ position:"absolute", bottom: 50, right:30 }}>
         <TouchableOpacity onPress={handleAddWatch}>
           <Text>Agregar</Text>
@@ -43,11 +46,12 @@ export const WatchesList = () => {
 
 
 
-// const styles = StyleSheet.create({
-//   item: {
-//     padding:5,
-//     width: "50%",
-//     height: 250,
-//     display:"flex", justifyContent:"space-between",
-//   }
-// });
+const styles = StyleSheet.create({
+  item: {
+    padding:5,
+    width: "100%",
+    minHeight: 150,
+    display:"flex", 
+    justifyContent:"space-between",
+  }
+});
