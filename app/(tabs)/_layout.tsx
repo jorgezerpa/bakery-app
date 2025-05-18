@@ -31,7 +31,14 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tiempo',
+          title: 'crono',
+          tabBarIcon: ({ color }) => <MaterialIcons size={28} color={color} name='watch-later' />,
+        }}
+      />
+      <Tabs.Screen
+        name="timer"
+        options={{
+          title: 'Tempor.',
           tabBarIcon: ({ color }) => <MaterialIcons size={28} color={color} name='watch-later' />,
         }}
       />

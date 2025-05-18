@@ -8,7 +8,11 @@ interface WatchType {
   id: string
 }
 
-export const WatchesList = () => {
+interface WatchesListProps {
+  title: string
+}
+
+export const WatchesList = ({title}:WatchesListProps) => {
   const [watches, setWatches] = useState<WatchType[]>([])
 
   const handleAddWatch = () => {
@@ -25,7 +29,7 @@ export const WatchesList = () => {
   return (
     <>
       <ScrollView>
-        <Text style={{ textAlign:"center", fontSize:30, fontWeight:"600", marginBottom:30, marginTop:10 }}>Time tracking</Text>
+        <Text style={{ textAlign:"center", fontSize:30, fontWeight:"600", marginBottom:30, marginTop:10 }}>{title}</Text>
         {
           watches.length === 0 && (
             <View style={{ height:350, justifyContent:"center", alignItems:"center", gap:0, paddingHorizontal:20 }}>

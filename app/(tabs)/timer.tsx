@@ -7,7 +7,7 @@ export default function HomeScreen() {
     <SafeAreaView style={{ paddingTop:"10%", paddingHorizontal:"2%", backgroundColor:"white", flex:1 }}>
       
       <StatusBar animated={true} backgroundColor="#61dafb" />
-      <WatchesList title='Cronometro' />
+      <WatchesList title="Temporizador" />
 
     </SafeAreaView>
   );

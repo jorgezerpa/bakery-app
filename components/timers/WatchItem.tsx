@@ -1,4 +1,5 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { usePathname } from 'expo-router';
 import React, { useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { Chrono } from './Chrono';
@@ -6,11 +7,10 @@ import { SelectWatchType } from './SelectWatchType';
 import { Timer } from "./Timer";
 
 
-
 export const WatchItem = ({id, handleDeleteWatch}:{id:string, handleDeleteWatch:any}) => {
-
-  const [type, setType] = useState<null|"chrono"|"timer">(null)
-
+  const pathname = usePathname();
+  // if you wish to allow the user to select the type of watch, you can set this value initially to null so the SelectWatchType component is shown (it already has the logic to set the type by clicking it)
+  const [type, setType] = useState<null|"chrono"|"timer">(pathname === "/timer" ? "timer" : pathname === "/" ? "chrono" : null);
   const handleSetWatch = (type: "timer" | "chrono") => {
     setType(type);
   }
