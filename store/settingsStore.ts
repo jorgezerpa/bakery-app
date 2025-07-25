@@ -1,17 +1,9 @@
+import { STORAGE_KEYS } from '@/types/shared';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { create } from 'zustand';
 
 type Language = "EN"|"ES";
-
-interface STORAGE_KEYS_TYPES {
-    language: string
-    keep_awake: string
-}
-
-const STORAGE_KEYS:STORAGE_KEYS_TYPES = {
-    language: "0x_ovenflow_language",
-    keep_awake: "0x_ovenflow_keep_awake",
-}
 
 interface SettingsState {
     language: Language
@@ -30,6 +22,8 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     },
     
     setKeepAwake: async (keepAwake) => {
+        if(keepAwake) activateKeepAwakeAsync()
+        if(!keepAwake) deactivateKeepAwake()
         await AsyncStorage.setItem(STORAGE_KEYS.keep_awake, JSON.stringify(keepAwake)); 
         set((SettingsState) => ({ keepAwake }))
     },
