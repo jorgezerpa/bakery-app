@@ -31,7 +31,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'crono',
+          title: 'crono.',
           tabBarIcon: ({ color }) => <MaterialIcons size={28} color={color} name='watch-later' />,
         }}
       />
@@ -43,10 +43,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="settings"
         options={{
-          title: 'Recetas',
-          tabBarIcon: ({ color }) => <MaterialIcons size={28} color={color} name='my-library-books' />,
+          title: 'Config.',
+          tabBarIcon: ({ color }) => <MaterialIcons size={28} color={color} name='settings' />,
         }}
       />
     </Tabs>

@@ -1,5 +1,5 @@
 // @dev Index tab is the `Cronometro` tab, the first one open when the app starts
-import { WatchesList } from '@/components/timers/WatchesList';
+import { Settings } from '@/components/settings/Settings';
 import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
 
 export default function HomeScreen() {
@@ -8,7 +8,7 @@ export default function HomeScreen() {
     <SafeAreaView style={{ paddingTop:"10%", paddingHorizontal:"2%", backgroundColor:"white", flex:1 }}>
       
       <StatusBar animated={true} backgroundColor="#61dafb" />
-      <WatchesList title='Cronometro' />
+      <Settings />
 
     </SafeAreaView>
   );
