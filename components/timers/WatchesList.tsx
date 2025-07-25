@@ -1,7 +1,20 @@
+import { useSettingsStore } from '@/store/settingsStore';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { WatchItem } from './WatchItem';
+
+
+const TEXTS = {
+  "ES": {
+    no_watches_created: "dale click al boton de agregar para iniciar un reloj.",
+    add_button_text: "Agregar"
+  },
+  "EN": {
+    no_watches_created: "Click add button to display a watch",
+    add_button_text: "Add"
+  }
+}
 
 
 interface WatchType {
@@ -13,6 +26,7 @@ interface WatchesListProps {
 }
 
 export const WatchesList = ({title}:WatchesListProps) => {
+  const settingsStore = useSettingsStore();
   const [watches, setWatches] = useState<WatchType[]>([])
 
   const handleAddWatch = () => {
@@ -35,7 +49,7 @@ export const WatchesList = ({title}:WatchesListProps) => {
             <View style={{ height:350, justifyContent:"center", alignItems:"center", gap:0, paddingHorizontal:20 }}>
               {/* <MaterialIcons size={100} color={"#333"} name='watch-later' /> */}
               <Text style={{ textAlign:"center", color:"#666", fontSize:20 }}>
-                dale click al boton de agregar para iniciar un reloj.
+                { TEXTS[settingsStore.language].no_watches_created }
               </Text>
             </View>
           )
@@ -50,7 +64,7 @@ export const WatchesList = ({title}:WatchesListProps) => {
         <View style={{ alignItems:"center" }}>
           <TouchableOpacity onPress={handleAddWatch} style={{ alignItems:"center" }}>
             <MaterialIcons size={70} color={"#000"} name='add-circle' />
-            <Text>Agregar</Text>
+            <Text>{ TEXTS[settingsStore.language].add_button_text }</Text>
           </TouchableOpacity>
         </View>
 

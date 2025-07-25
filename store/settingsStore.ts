@@ -1,9 +1,7 @@
-import { STORAGE_KEYS } from '@/types/shared';
+import { Language, STORAGE_KEYS } from '@/types/shared';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { create } from 'zustand';
-
-type Language = "EN"|"ES";
 
 interface SettingsState {
     language: Language

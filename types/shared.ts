@@ -1,3 +1,5 @@
+export type Language = "EN"|"ES";
+
 export interface STORAGE_KEYS_TYPES {
     language: string
     keep_awake: string
