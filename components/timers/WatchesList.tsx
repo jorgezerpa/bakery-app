@@ -1,10 +1,11 @@
+import { useInitialReloadStateStore } from '@/store/InitialReloadState';
 import { useSettingsStore } from '@/store/settingsStore';
 import { WatchType } from '@/types/shared';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import React, { useState } from 'react';
+import { usePathname } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { WatchItem } from './WatchItem';
-
 
 const TEXTS = {
   "ES": {
@@ -17,25 +18,59 @@ const TEXTS = {
   }
 }
 
-
 interface WatchesListProps {
   title: string
 }
 
 export const WatchesList = ({title}:WatchesListProps) => {
+  const pathname = usePathname();
+  const initialReloadStateStore = useInitialReloadStateStore()
   const settingsStore = useSettingsStore();
   const [watches, setWatches] = useState<WatchType[]>([])
+  const [lockFirstLoad, setLockFirstLoad] = useState(false)
 
+  // @dev is not needed to specify a watch type (timer or chrono) because the `WatchItem` component renders one of them based on the current tab 
   const handleAddWatch = () => {
-    const newWatch:WatchType = { id:"uniquewatchlistiditem" + Math.random() + Math.random()  }
+    const watch_id = "uniquewatchlistiditem" + Math.random().toString() + Math.random().toString()
+    const newWatch:WatchType = { id: watch_id }
     setWatches([...watches, newWatch]) 
+
+    // add the watch to the store
+    if (pathname === "/timer") {
+      initialReloadStateStore.updateTimer(watch_id, { current_time: 0, is_running: false, type: "timer", timer_initial_time: 0, title: "" });
+    }
+    if (pathname === "/") {
+      initialReloadStateStore.updateChrono(watch_id, { current_time: 0, is_running: false, type: "chrono", title: "" }); 
+    } 
   }
 
   const handleDeleteWatch = (idToDelete: string) => {
     setWatches((prev) => 
       prev.filter((item) => item.id !== idToDelete)
     );
+    // delete the watch from the store
+    if (pathname === "/timer") {
+      initialReloadStateStore.deleteTimer(idToDelete);
+    }
+    if (pathname === "/") {
+      initialReloadStateStore.deleteChrono(idToDelete);
+    }
   }
+
+  // // useEffect to read the watches from the store on first render
+  useEffect(() => {
+    if (initialReloadStateStore.firstLoadDone && !lockFirstLoad) {
+      readWatchesFromStore()
+      setLockFirstLoad(true)
+    }
+  }, [initialReloadStateStore.firstLoadDone]);
+
+  const readWatchesFromStore = () => {
+    const _watches: WatchType[] = []
+    if( pathname === "/timer") _watches.push(...Object.keys(initialReloadStateStore.timers).map((key) => ({ id: key })));
+    if( pathname === "/") _watches.push(...Object.keys(initialReloadStateStore.chronos).map((key) => ({ id: key })));
+    setWatches(_watches);
+  };
 
   return (
     <>

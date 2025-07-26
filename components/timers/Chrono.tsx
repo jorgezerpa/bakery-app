@@ -1,22 +1,32 @@
+import { useInitialReloadStateStore } from '@/store/InitialReloadState';
 import { commonStyles } from '@/styles/common';
 import { formatTime } from '@/utils/formatDate';
 import React, { useEffect, useRef, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { WatchTitle } from './WatchTitle';
 
-export const Chrono = () => {
-
+export const Chrono = ({ id }:{id:string}) => {
+  const initialReloadState = useInitialReloadStateStore()
   const [title, setTitle] = useState("")
   const [time, setTime] = useState(0)
   const [running, setRunning] = useState(false)
   const intervalRef = useRef<number>(null)
   const startTimeRef = useRef(0)
+  const [lockFirstLoad, setLockFirstLoad] = useState(false)
 
   const startStopwatch = () => {
       startTimeRef.current = Date.now() - time * 1000;
       intervalRef.current = setInterval(() => {
-          setTime(Math.floor((Date.now() - 
-          startTimeRef.current) / 1000));
+          setTime(Math.floor((Date.now() - startTimeRef.current) / 1000));
+      }, 1000);
+      setRunning(true);
+  };
+
+  // on the first load, it is called in the same useEffect where we set time state initially, so it reestart to 0. For that we pass the time param in this situation
+  const startStopwatchOnFirstLoad = (time:number) => {
+      startTimeRef.current = Date.now() - time * 1000;
+      intervalRef.current = setInterval(() => {
+          setTime(Math.floor((Date.now() - startTimeRef.current) / 1000));
       }, 1000);
       setRunning(true);
   };
@@ -41,16 +51,37 @@ export const Chrono = () => {
         setRunning(true);
     };
 
-     // useEffect for cleanup when the component unmounts
+    // updates store every second
+    useEffect(()=>{
+      if(!lockFirstLoad) {
+        const chronoData = initialReloadState.chronos[id];
+        setTime(chronoData.current_time);
+        setRunning(chronoData.is_running);
+        setTitle(chronoData.title);
+        setLockFirstLoad(true)
+        if(chronoData.is_running) startStopwatchOnFirstLoad(chronoData.current_time); // start the stopwatch if it was running
+      }
+      if(lockFirstLoad) {
+        initialReloadState.updateChrono(id, { current_time: time, is_running: running, type: "chrono", title: title });
+      }
+    }, [time, running])
+
+     // for cleanup when the component unmounts
     useEffect(() => {
-      // This return function will be called when the component unmounts
       return () => {
-        if (intervalRef.current !== null) {
+        if (intervalRef.current !== null) { 
           clearInterval(intervalRef.current);
           console.log('watch unmounted: Timer cleared!');
         }
       };
-    }, []); // The empty dependency array ensures this effect runs only once on mount and once on unmount.
+    }, []); 
+
+    useEffect(() => {
+      if(!running) {
+        initialReloadState.updateChrono(id, { current_time: time, is_running: running, type: "chrono", title: title });
+      }
+    }, [title]);
+
 
 
   return (

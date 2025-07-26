@@ -1,6 +1,6 @@
 import { WatchesList } from '@/components/timers/WatchesList';
 import { useSettingsStore } from '@/store/settingsStore';
-import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 
 const TEXTS = {
   "ES": {
@@ -17,7 +17,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={{ paddingTop:"10%", paddingHorizontal:"2%", backgroundColor:"white", flex:1 }}>
       
-      <StatusBar animated={true} backgroundColor="#61dafb" />
+      {/* <StatusBar animated={true} backgroundColor="#61dafb" /> */}
       <WatchesList title={TEXTS[settingsStore.language].title} />
 
     </SafeAreaView>

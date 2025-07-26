@@ -1,11 +1,14 @@
+import { useInitialReloadStateStore } from '@/store/InitialReloadState';
 import { commonStyles } from '@/styles/common';
 import { convertTimestampToMilitaryTime, formatTime } from '@/utils/formatDate';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { WatchTitle } from './WatchTitle';
 
-export const Timer = () => {
+// ############
 
+export const Timer = ({ id }:{id:string}) => {
+  const initialReloadState = useInitialReloadStateStore()
   const [initialTime, setInitialTime] = useState(0);
   const [virtualInitialTime, setVirtualInitialTime] = useState({
     hours: 0,
@@ -16,23 +19,29 @@ export const Timer = () => {
   const [time, setTime] = useState(initialTime);
   const [running, setRunning] = useState(false);
   const intervalRef = useRef<number>(null);
-  const startTimeRef = useRef(0); // This will still be useful for accurate pausing/resuming
+  const startTimeRef = useRef<number>(0);
 
-  useEffect(() => {
-    if (time === 0 && running) {
-      pauseTimer(); // Automatically stop when time reaches 0
-    }
-  }, [time, running]);
+  const [lockFirstLoad, setLockFirstLoad] = useState(false)
 
-  const startTimer = () => {
-    // Calculate startTimeRef so that the countdown begins from the current 'time'
-    startTimeRef.current = Date.now() + time * 1000;
-    intervalRef.current = setInterval(() => {
-      const remainingTime = Math.ceil((startTimeRef.current - Date.now()) / 1000);
-      setTime(remainingTime >= 0 ? remainingTime : 0); // Ensure time doesn't go negative
-    }, 1000);
-    setRunning(true);
-  };
+    const startTimer = () => {
+      // Calculate startTimeRef so that the countdown begins from the current 'time'
+      startTimeRef.current = Date.now() + time * 1000;
+      intervalRef.current = setInterval(() => {
+        const remainingTime = Math.ceil((startTimeRef.current - Date.now()) / 1000);
+        setTime(remainingTime >= 0 ? remainingTime : 0); // Ensure time doesn't go negative
+      }, 1000);
+      setRunning(true);
+    };
+
+    const startTimerOnFirstLoad = (time:number) => {
+      // Calculate startTimeRef so that the countdown begins from the current 'time'
+      startTimeRef.current = Date.now() + time * 1000;
+      intervalRef.current = setInterval(() => {
+        const remainingTime = Math.ceil((startTimeRef.current - Date.now()) / 1000);
+        setTime(remainingTime >= 0 ? remainingTime : 0); // Ensure time doesn't go negative
+      }, 1000);
+      setRunning(true);
+    };
 
   const pauseTimer = () => {
     clearInterval(intervalRef.current || undefined);
@@ -55,15 +64,49 @@ export const Timer = () => {
     setRunning(true);
   };
 
+
+  // updates store every second
+      useEffect(()=>{
+        if(!lockFirstLoad) {
+          const timerData = initialReloadState.timers[id];
+          if(typeof timerData.timer_initial_time === "undefined") return
+          
+          setTime(timerData.current_time);
+          setRunning(timerData.is_running && timerData.current_time > 0);
+          setTitle(timerData.title);
+          setInitialTime(timerData.timer_initial_time);
+          setVirtualInitialTime({
+            hours: Math.floor(timerData.timer_initial_time / 3600),
+            minutes: Math.floor((timerData.timer_initial_time % 3600) / 60),
+            seconds: timerData.timer_initial_time % 60
+          });
+          setLockFirstLoad(true)
+          if(timerData.is_running && timerData.current_time > 0) startTimerOnFirstLoad(timerData.current_time); // start the timer if it was running and has time left
+        }
+
+        if(lockFirstLoad) {
+          if (time === 0 && running) {
+            pauseTimer(); // Automatically stop when time reaches 0
+          }
+          initialReloadState.updateTimer(id, { current_time: time, is_running: running, type: "timer", timer_initial_time: initialTime, title: title });
+        }
+      }, [time, running])
+
   useEffect(() => {
-    // This return function will be called when the component unmounts
     return () => {
       if (intervalRef.current !== null) {
         clearInterval(intervalRef.current);
         console.log('watch unmounted: Timer cleared!');
       }
     };
-  }, []); // The empty dependency array ensures this effect runs only once on mount and once on unmount.
+  }, []);
+
+  useEffect(() => {
+    if(!running) {
+      initialReloadState.updateTimer(id, { current_time: time, is_running: running, type: "timer", timer_initial_time: initialTime, title: title });
+    }
+  }, [title]);
+
 
   return (
       <>
