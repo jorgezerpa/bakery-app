@@ -8,6 +8,7 @@ interface SettingsState {
     keepAwake: boolean
     setLanguage: (language:Language) => void
     setKeepAwake: (keepAwake:boolean) => void
+    setInitialState: () => void // reads the storage to set properties to the saved value
 }
 
 export const useSettingsStore = create<SettingsState>((set) => ({
@@ -25,4 +26,22 @@ export const useSettingsStore = create<SettingsState>((set) => ({
         await AsyncStorage.setItem(STORAGE_KEYS.keep_awake, JSON.stringify(keepAwake)); 
         set((SettingsState) => ({ keepAwake }))
     },
+    setInitialState: async() => {
+        // KEEP AWAKE -> read from storage and custom logic
+        let _keepAwake = await AsyncStorage.getItem(STORAGE_KEYS.keep_awake)
+        let keep_awake:boolean;
+        if(_keepAwake) { // if not null
+            keep_awake = JSON.parse(_keepAwake)
+            if(keep_awake) activateKeepAwakeAsync() // if its true
+        } 
+
+        // LANG -> read from storage and custom logic
+        let language = await AsyncStorage.getItem(STORAGE_KEYS.language)
+        
+        // set states for all values
+        set((SettingsState) => ({ 
+            language: language ? language as Language : "ES",
+            keepAwake: keep_awake
+        }))
+    }
 }))

@@ -7,11 +7,13 @@ import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
+import { useSettingsStore } from '@/store/settingsStore';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const settingsStore = useSettingsStore();
 
   return (
     <Tabs
@@ -31,21 +33,21 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'crono.',
+          title: settingsStore.language == "ES" ? 'cronometro' : 'chrono',
           tabBarIcon: ({ color }) => <MaterialIcons size={28} color={color} name='watch-later' />,
         }}
       />
       <Tabs.Screen
         name="timer"
         options={{
-          title: 'Tempor.',
+          title: settingsStore.language == "ES" ? "temporizador" : "timer",
           tabBarIcon: ({ color }) => <MaterialIcons size={28} color={color} name='watch-later' />,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Config.',
+          title: settingsStore.language == "ES" ? "configuracion" : "config",
           tabBarIcon: ({ color }) => <MaterialIcons size={28} color={color} name='settings' />,
         }}
       />

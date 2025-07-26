@@ -9,3 +9,8 @@ export const STORAGE_KEYS:STORAGE_KEYS_TYPES = {
     language: "0x_ovenflow_language",
     keep_awake: "0x_ovenflow_keep_awake",
 }
+
+///////
+export interface WatchType {
+  id: string
+}

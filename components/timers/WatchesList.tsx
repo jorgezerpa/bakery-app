@@ -1,4 +1,5 @@
 import { useSettingsStore } from '@/store/settingsStore';
+import { WatchType } from '@/types/shared';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -16,10 +17,6 @@ const TEXTS = {
   }
 }
 
-
-interface WatchType {
-  id: string
-}
 
 interface WatchesListProps {
   title: string
