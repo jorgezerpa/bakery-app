@@ -3,15 +3,15 @@ export type Language = "EN"|"ES";
 export interface STORAGE_KEYS_TYPES {
     language: string
     keep_awake: string
-    watches_data: string
-    last_timestamp_in_seconds: string
+    chronos_data: string
+    timers_data: string
 }
 
 export const STORAGE_KEYS:STORAGE_KEYS_TYPES = {
     language: "0x_ovenflow_language",
     keep_awake: "0x_ovenflow_keep_awake",
-    watches_data: "0x_ovenflow_watches_data",
-    last_timestamp_in_seconds: "0x_ovenflow_last_timestamp_in_seconds"
+    chronos_data: "0x_ovenflow_chronos_data",
+    timers_data: "0x_ovenflow_timers_data",
 }
 
 ///////
@@ -22,9 +22,11 @@ export interface WatchType {
 
 // type used for initialReloadState logic
 export interface Watch {
-    title: string
-    current_time: number
     type: "chrono"|"timer"
+    title: string
+    current_time: number // slapsed time (AKA what's displayed on the screen)
+    start_time: number // timestamp when start running
+    pause_time: number // timestamp when its paused
     is_running: boolean
     // only for timer
     timer_initial_time?: number

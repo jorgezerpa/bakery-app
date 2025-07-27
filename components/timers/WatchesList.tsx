@@ -35,29 +35,20 @@ export const WatchesList = ({title}:WatchesListProps) => {
     const newWatch:WatchType = { id: watch_id }
     setWatches([...watches, newWatch]) 
 
-    // add the watch to the store
-    if (pathname === "/timer") {
-      initialReloadStateStore.updateTimer(watch_id, { current_time: 0, is_running: false, type: "timer", timer_initial_time: 0, title: "" });
-    }
-    if (pathname === "/") {
-      initialReloadStateStore.updateChrono(watch_id, { current_time: 0, is_running: false, type: "chrono", title: "" }); 
-    } 
+    // add the watch to the store 
+      const _watchType = pathname == "/timer" ? "timer" : "chrono"
+      initialReloadStateStore.updateWatch(watch_id, { current_time: 0, start_time: 0, pause_time: 0, is_running: false, type: _watchType, timer_initial_time: 0, title: "" })
   }
 
   const handleDeleteWatch = (idToDelete: string) => {
     setWatches((prev) => 
       prev.filter((item) => item.id !== idToDelete)
     );
-    // delete the watch from the store
-    if (pathname === "/timer") {
-      initialReloadStateStore.deleteTimer(idToDelete);
-    }
-    if (pathname === "/") {
-      initialReloadStateStore.deleteChrono(idToDelete);
-    }
+    const _watchType = pathname == "/timer" ? "timer" : "chrono"
+    initialReloadStateStore.deleteWatch(idToDelete, _watchType)
   }
 
-  // // useEffect to read the watches from the store on first render
+  // to read the watches from the store on first render
   useEffect(() => {
     if (initialReloadStateStore.firstLoadDone && !lockFirstLoad) {
       readWatchesFromStore()

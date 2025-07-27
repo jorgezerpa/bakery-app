@@ -12,74 +12,67 @@ export const Chrono = ({ id }:{id:string}) => {
   const [running, setRunning] = useState(false)
   const intervalRef = useRef<number>(null)
   const startTimeRef = useRef(0)
-  const [lockFirstLoad, setLockFirstLoad] = useState(false)
 
+  // used to start and resume 
   const startStopwatch = () => {
-      startTimeRef.current = Date.now() - time * 1000;
+      startTimeRef.current = Math.floor(Date.now())/1000 - time;
+      const _time = Math.floor((Math.floor(Date.now())/1000 - startTimeRef.current))
       intervalRef.current = setInterval(() => {
-          setTime(Math.floor((Date.now() - startTimeRef.current) / 1000));
+        const _time = Math.floor((Math.floor(Date.now())/1000 - startTimeRef.current))
+          setTime(_time);
       }, 1000);
       setRunning(true);
-  };
 
-  // on the first load, it is called in the same useEffect where we set time state initially, so it reestart to 0. For that we pass the time param in this situation
-  const startStopwatchOnFirstLoad = (time:number) => {
-      startTimeRef.current = Date.now() - time * 1000;
+      initialReloadState.updateWatch(id, { current_time: _time, start_time: startTimeRef.current, pause_time: 0, is_running: true, title: title, type:"chrono" })
+    };
+    
+    // on the first load, it is called in the same useEffect where we set time state initially, so it reestart to 0 because startTimeRef.current is 0 at the moment. For that we pass the time param in this situation
+    // used only if chrono is running 
+    const startStopwatchOnFirstLoad = (time:number) => {
+      startTimeRef.current = Math.floor(Date.now())/1000 - time;
+      const _time = Math.floor((Math.floor(Date.now())/1000 - startTimeRef.current))
       intervalRef.current = setInterval(() => {
-          setTime(Math.floor((Date.now() - startTimeRef.current) / 1000));
+        const _time = Math.floor((Math.floor(Date.now())/1000 - startTimeRef.current))
+        setTime(_time);
       }, 1000);
       setRunning(true);
-  };
-
-  const pauseStopwatch = () => {
-        clearInterval(intervalRef.current || undefined);
-        setRunning(false);
+      initialReloadState.updateWatch(id, { current_time: _time, start_time: startTimeRef.current, pause_time: 0, is_running: true, title: title, type:"chrono" })
+    };
+    
+    const pauseStopwatch = () => {
+      clearInterval(intervalRef.current || undefined);
+      setRunning(false);
+      const _pause_time = Math.floor(Date.now())/1000
+      initialReloadState.updateWatch(id, { current_time: time, start_time: startTimeRef.current, pause_time: _pause_time, is_running: false, title: title, type:"chrono" })
     };
 
     const resetStopwatch = () => {
         clearInterval(intervalRef.current || undefined);
         setTime(0);
         setRunning(false);
+        initialReloadState.updateWatch(id, { current_time: 0, start_time: 0, pause_time: 0, is_running: false, title: title, type:"chrono" })
     };
 
-    const resumeStopwatch = () => {
-        startTimeRef.current = Date.now() - time * 1000;
-        intervalRef.current = setInterval(() => {
-            setTime(Math.floor(
-                (Date.now() - startTimeRef.current) / 1000));
-        }, 1000);
-        setRunning(true);
-    };
-
-    // updates store every second
+    // read store data on first load
     useEffect(()=>{
-      if(!lockFirstLoad) {
         const chronoData = initialReloadState.chronos[id];
-        setTime(chronoData.current_time);
+        setTime(chronoData.current_time); // @dev the start time ref is setted to the correspondant value when call startStopwatch or stopWatchOnFirstLoad
         setRunning(chronoData.is_running);
         setTitle(chronoData.title);
-        setLockFirstLoad(true)
         if(chronoData.is_running) startStopwatchOnFirstLoad(chronoData.current_time); // start the stopwatch if it was running
-      }
-      if(lockFirstLoad) {
-        initialReloadState.updateChrono(id, { current_time: time, is_running: running, type: "chrono", title: title });
-      }
-    }, [time, running])
 
-     // for cleanup when the component unmounts
-    useEffect(() => {
-      return () => {
-        if (intervalRef.current !== null) { 
-          clearInterval(intervalRef.current);
-          console.log('watch unmounted: Timer cleared!');
-        }
-      };
-    }, []); 
+        // for cleanup when the component unmounts        
+        return () => {
+          if (intervalRef.current !== null) { 
+            clearInterval(intervalRef.current);
+            console.log('watch unmounted: Timer cleared!');
+          }
+        };
+    }, [])
 
     useEffect(() => {
-      if(!running) {
-        initialReloadState.updateChrono(id, { current_time: time, is_running: running, type: "chrono", title: title });
-      }
+        const chrono = initialReloadState.chronos[id]
+        initialReloadState.updateWatch(id, { ...chrono, title: title });
     }, [title]);
 
 
@@ -112,7 +105,7 @@ export const Chrono = ({ id }:{id:string}) => {
                               <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>Reiniciar</Text>
                           </TouchableOpacity>
                       }
-                      <TouchableOpacity style={{ ...commonStyles.watchButton, backgroundColor:"#2501c9" }} onPress={time===0?startStopwatch:resumeStopwatch}>
+                      <TouchableOpacity style={{ ...commonStyles.watchButton, backgroundColor:"#2501c9" }} onPress={startStopwatch}>
                           <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>{time===0?"Iniciar":"continuar"}</Text>
                       </TouchableOpacity>
                     </>

@@ -21,91 +21,77 @@ export const Timer = ({ id }:{id:string}) => {
   const intervalRef = useRef<number>(null);
   const startTimeRef = useRef<number>(0);
 
-  const [lockFirstLoad, setLockFirstLoad] = useState(false)
-
     const startTimer = () => {
-      // Calculate startTimeRef so that the countdown begins from the current 'time'
-      startTimeRef.current = Date.now() + time * 1000;
+      startTimeRef.current = Math.floor(Date.now())/1000 + time;
+      const remainingTime = Math.ceil(startTimeRef.current - Math.floor(Date.now())/1000);
       intervalRef.current = setInterval(() => {
-        const remainingTime = Math.ceil((startTimeRef.current - Date.now()) / 1000);
+        const remainingTime = Math.ceil((startTimeRef.current - Math.floor(Date.now())/1000));
         setTime(remainingTime >= 0 ? remainingTime : 0); // Ensure time doesn't go negative
+        if (remainingTime <= 0) {
+          pauseTimer();
+        }
       }, 1000);
       setRunning(true);
+      initialReloadState.updateWatch(id, { current_time: remainingTime, start_time: startTimeRef.current, pause_time: 0, timer_initial_time: initialTime, is_running: true, title: title, type:"timer" })
     };
 
     const startTimerOnFirstLoad = (time:number) => {
       // Calculate startTimeRef so that the countdown begins from the current 'time'
-      startTimeRef.current = Date.now() + time * 1000;
+      startTimeRef.current = Math.floor(Date.now())/1000 + time;
+      const remainingTime = Math.ceil(startTimeRef.current - Math.floor(Date.now())/1000);
       intervalRef.current = setInterval(() => {
-        const remainingTime = Math.ceil((startTimeRef.current - Date.now()) / 1000);
+        const remainingTime = Math.ceil(startTimeRef.current - Math.floor(Date.now())/1000);
         setTime(remainingTime >= 0 ? remainingTime : 0); // Ensure time doesn't go negative
+        if (remainingTime <= 0) {
+          pauseTimer();
+        }
       }, 1000);
       setRunning(true);
+      initialReloadState.updateWatch(id, { current_time: remainingTime, start_time: startTimeRef.current, pause_time: 0, timer_initial_time: initialTime, is_running: true, title: title, type:"timer" })
     };
 
   const pauseTimer = () => {
     clearInterval(intervalRef.current || undefined);
     setRunning(false);
+    const _pauseTime = Math.floor(Date.now())/1000
+    initialReloadState.updateWatch(id, { current_time: time, start_time: startTimeRef.current, pause_time: _pauseTime, timer_initial_time: initialTime, is_running: false, title: title, type:"timer" })
   };
 
   const resetTimer = () => {
     clearInterval(intervalRef.current || undefined);
     setTime(initialTime); // Reset to the initial time
     setRunning(false);
+    initialReloadState.updateWatch(id, { current_time: initialTime, start_time: 0, pause_time: 0, timer_initial_time: initialTime, is_running: false, title: title, type:"chrono" })
   };
 
-  const resumeTimer = () => {
-    // Recalculate startTimeRef based on the current 'time' to resume accurately
-    startTimeRef.current = Date.now() + time * 1000;
-    intervalRef.current = setInterval(() => {
-      const remainingTime = Math.ceil((startTimeRef.current - Date.now()) / 1000);
-      setTime(remainingTime >= 0 ? remainingTime : 0);
-    }, 1000);
-    setRunning(true);
-  };
-
-
-  // updates store every second
+  // update store on first load 
       useEffect(()=>{
-        if(!lockFirstLoad) {
-          const timerData = initialReloadState.timers[id];
-          if(typeof timerData.timer_initial_time === "undefined") return
-          
-          setTime(timerData.current_time);
-          setRunning(timerData.is_running && timerData.current_time > 0);
-          setTitle(timerData.title);
-          setInitialTime(timerData.timer_initial_time);
-          setVirtualInitialTime({
-            hours: Math.floor(timerData.timer_initial_time / 3600),
-            minutes: Math.floor((timerData.timer_initial_time % 3600) / 60),
-            seconds: timerData.timer_initial_time % 60
-          });
-          setLockFirstLoad(true)
-          if(timerData.is_running && timerData.current_time > 0) startTimerOnFirstLoad(timerData.current_time); // start the timer if it was running and has time left
-        }
-
-        if(lockFirstLoad) {
-          if (time === 0 && running) {
-            pauseTimer(); // Automatically stop when time reaches 0
+        const timerData = initialReloadState.timers[id];
+        if(typeof timerData.timer_initial_time === "undefined" || !timerData.timer_initial_time) return
+        
+        setTime(timerData.current_time);
+        setRunning(timerData.is_running && timerData.current_time > 0);
+        setTitle(timerData.title);
+        setInitialTime(timerData.timer_initial_time);
+        setVirtualInitialTime({
+          hours: Math.floor(timerData.timer_initial_time / 3600),
+          minutes: Math.floor((timerData.timer_initial_time % 3600) / 60),
+          seconds: timerData.timer_initial_time % 60
+        });
+        if(timerData.is_running && timerData.current_time > 0) startTimerOnFirstLoad(timerData.current_time); // start the timer if it was running and has time left
+        
+        return () => {
+          if (intervalRef.current !== null) {
+            clearInterval(intervalRef.current);
+            console.log('watch unmounted: Timer cleared!');
           }
-          initialReloadState.updateTimer(id, { current_time: time, is_running: running, type: "timer", timer_initial_time: initialTime, title: title });
-        }
-      }, [time, running])
+        };
+      }, [])
 
-  useEffect(() => {
-    return () => {
-      if (intervalRef.current !== null) {
-        clearInterval(intervalRef.current);
-        console.log('watch unmounted: Timer cleared!');
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if(!running) {
-      initialReloadState.updateTimer(id, { current_time: time, is_running: running, type: "timer", timer_initial_time: initialTime, title: title });
-    }
-  }, [title]);
+      useEffect(() => {
+          const timer = initialReloadState.timers[id]
+          initialReloadState.updateWatch(id, { ...timer, title: title });
+      }, [title]);
 
 
   return (
@@ -152,7 +138,7 @@ export const Timer = ({ id }:{id:string}) => {
                     {
                       running && 
                         <Text style={{ fontSize:12 }}>
-                          Finaliza a las { convertTimestampToMilitaryTime((Date.now()/1000) + time) }
+                          Finaliza a las { convertTimestampToMilitaryTime((Math.floor(Date.now())/1000) + time) }
                         </Text>
                     }
                   </View>
@@ -172,7 +158,7 @@ export const Timer = ({ id }:{id:string}) => {
                                 <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>Reiniciar</Text>
                             </TouchableOpacity>
                           }
-                          <TouchableOpacity onPress={time===0?startTimer:resumeTimer} style={{ ...commonStyles.watchButton, backgroundColor:"#2501c9" }}>
+                          <TouchableOpacity onPress={startTimer} style={{ ...commonStyles.watchButton, backgroundColor:"#2501c9" }}>
                               <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>{time===initialTime?"Iniciar":"continuar"}</Text>
                           </TouchableOpacity>
                         </>
