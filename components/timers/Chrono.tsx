@@ -1,9 +1,35 @@
 import { useInitialReloadStateStore } from '@/store/InitialReloadState';
+import { useSettingsStore } from '@/store/settingsStore';
 import { commonStyles } from '@/styles/common';
 import { formatTime } from '@/utils/formatDate';
 import React, { useEffect, useRef, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { WatchTitle } from './WatchTitle';
+
+const TEXTS = {
+  "ES": {
+    timer:"temporizador",
+    chrono: "cronometro",
+     accept: "aceptar",
+    start: "iniciar",
+    stop: "parar",
+    reestart: "reiniciar",
+    continue: "continuar",
+    finishAt: "Finaliza a las",
+    finishedAt: "Finalizado a las",
+  },
+  "EN": {
+    timer: "timer",
+    chrono: "chronometer",
+    accept: "accept",
+    start: "start",
+    stop: "stop",
+    reestart: "reestart",
+    continue: "continue",
+    finishAt: "Finish at",
+    finishedAt: "Finished at",
+  }
+}
 
 export const Chrono = ({ id }:{id:string}) => {
   const initialReloadState = useInitialReloadStateStore()
@@ -12,6 +38,7 @@ export const Chrono = ({ id }:{id:string}) => {
   const [running, setRunning] = useState(false)
   const intervalRef = useRef<number>(null)
   const startTimeRef = useRef(0)
+  const settingsStore = useSettingsStore();
 
   // used to start and resume 
   const startStopwatch = () => {
@@ -82,9 +109,9 @@ export const Chrono = ({ id }:{id:string}) => {
           <WatchTitle title={title} setTitle={setTitle}  />
           <View style={{ justifyContent:"space-between", alignItems:"flex-end" }}>
               <View style={{ backgroundColor:"white", }}>
-                <Text style={{ fontSize:12, textAlign:"right" }}>
-                      cronometro
-                </Text>
+                {/* <Text style={{ fontSize:12, textAlign:"right" }}>
+                      {TEXTS[settingsStore.language].chrono}
+                </Text> */}
                 <Text style={{ ...commonStyles.watchTime }}>
                   { formatTime(time) }
                 </Text>
@@ -93,7 +120,7 @@ export const Chrono = ({ id }:{id:string}) => {
                 {
                   running &&
                       <TouchableOpacity onPress={pauseStopwatch} style={{ ...commonStyles.watchButton, backgroundColor:"#0b5edb" }}>
-                          <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>Stop</Text>
+                          <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>{TEXTS[settingsStore.language].stop}</Text>
                       </TouchableOpacity>
                 }
                 {
@@ -102,11 +129,11 @@ export const Chrono = ({ id }:{id:string}) => {
                       {
                         time !== 0 && 
                           <TouchableOpacity onPress={resetStopwatch} style={{ ...commonStyles.watchButton, backgroundColor:"#ca0404" }}>
-                              <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>Reiniciar</Text>
+                              <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>{TEXTS[settingsStore.language].reestart}</Text>
                           </TouchableOpacity>
                       }
                       <TouchableOpacity style={{ ...commonStyles.watchButton, backgroundColor:"#2501c9" }} onPress={startStopwatch}>
-                          <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>{time===0?"Iniciar":"continuar"}</Text>
+                          <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>{time===0?TEXTS[settingsStore.language].start:TEXTS[settingsStore.language].continue}</Text>
                       </TouchableOpacity>
                     </>
                 }

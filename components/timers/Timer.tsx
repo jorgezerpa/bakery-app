@@ -1,11 +1,35 @@
 import { useInitialReloadStateStore } from '@/store/InitialReloadState';
+import { useSettingsStore } from '@/store/settingsStore';
 import { commonStyles } from '@/styles/common';
 import { convertTimestampToAMorPMTime, formatTime } from '@/utils/formatDate';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { WatchTitle } from './WatchTitle';
 
-// ############
+const TEXTS = {
+  "ES": {
+    timer:"temporizador",
+    chrono: "cronometro",
+     accept: "aceptar",
+    start: "iniciar",
+    stop: "parar",
+    reestart: "reiniciar",
+    continue: "continuar",
+    finishAt: "Finaliza a las",
+    finishedAt: "Finalizado a las",
+  },
+  "EN": {
+    timer: "timer",
+    chrono: "chronometer",
+    accept: "accept",
+    start: "start",
+    stop: "stop",
+    reestart: "reestart",
+    continue: "continue",
+    finishAt: "Finish at",
+    finishedAt: "Finished at",
+  }
+}
 
 export const Timer = ({ id }:{id:string}) => {
   const initialReloadState = useInitialReloadStateStore()
@@ -20,6 +44,7 @@ export const Timer = ({ id }:{id:string}) => {
   const [running, setRunning] = useState(false);
   const intervalRef = useRef<number>(null);
   const startTimeRef = useRef<number>(0);
+  const settingsStore = useSettingsStore();
 
     const startTimer = () => {
       startTimeRef.current = Math.floor(Date.now())/1000 + time;
@@ -119,7 +144,7 @@ export const Timer = ({ id }:{id:string}) => {
                     }}
                   >
                     <Text style={{ fontSize:16, paddingHorizontal:5, paddingVertical:5, color:"#fefefe", backgroundColor:"#0ebced", borderRadius:5, textAlign:"center", textAlignVertical:"center", marginTop:15  }}>
-                      aceptar
+                      {TEXTS[settingsStore.language].accept}
                     </Text>
                   </TouchableOpacity>
               </View>
@@ -129,9 +154,9 @@ export const Timer = ({ id }:{id:string}) => {
             initialTime !== 0 && (
               <View style={{ justifyContent:"space-between", alignItems:"flex-end" }}>
                   <View style={{ backgroundColor:"white" }}>
-                    <Text style={{ fontSize:12, textAlign:"right" }}>
-                          temporizador
-                    </Text>
+                    {/* <Text style={{ fontSize:12, textAlign:"right" }}>
+                          {TEXTS[settingsStore.language].timer}
+                    </Text> */}
                     <Text style={{ fontSize:12, textAlign:"right" }}>
                       { formatTime(initialTime) }
                     </Text>
@@ -141,7 +166,7 @@ export const Timer = ({ id }:{id:string}) => {
                     {
                       (running || time==0) && 
                         <Text style={{ fontSize:12 }}>
-                          { time>0?"Finaliza":"finalizo" } a las { convertTimestampToAMorPMTime((Math.floor(Date.now())/1000) + time) }
+                          { time>0?TEXTS[settingsStore.language].finishAt:TEXTS[settingsStore.language].finishedAt } { convertTimestampToAMorPMTime((Math.floor(Date.now())/1000) + time) }
                         </Text>
                     }
                   </View>
@@ -149,7 +174,7 @@ export const Timer = ({ id }:{id:string}) => {
                     {
                       running &&
                           <TouchableOpacity onPress={pauseTimer} style={{ ...commonStyles.watchButton, backgroundColor:"#0b5edb" }}>
-                              <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>Stop</Text>
+                              <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>{TEXTS[settingsStore.language].stop}</Text>
                           </TouchableOpacity>
                     }
                     {
@@ -158,13 +183,13 @@ export const Timer = ({ id }:{id:string}) => {
                           {
                             time !== initialTime &&
                             <TouchableOpacity onPress={resetTimer} style={{ ...commonStyles.watchButton, backgroundColor:"#ca0404" }}>
-                                <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>Reiniciar</Text>
+                                <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>{TEXTS[settingsStore.language].reestart}</Text>
                             </TouchableOpacity>
                           }
                           {
                             time !== 0 &&
                             <TouchableOpacity onPress={startTimer} style={{ ...commonStyles.watchButton, backgroundColor:"#2501c9" }}>
-                                <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>{time===initialTime?"Iniciar":"continuar"}</Text>
+                                <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>{time===initialTime?TEXTS[settingsStore.language].start:TEXTS[settingsStore.language].continue}</Text>
                             </TouchableOpacity>
                           }
                         </>
