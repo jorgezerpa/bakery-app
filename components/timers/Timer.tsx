@@ -1,6 +1,6 @@
 import { useInitialReloadStateStore } from '@/store/InitialReloadState';
 import { commonStyles } from '@/styles/common';
-import { convertTimestampToMilitaryTime, formatTime } from '@/utils/formatDate';
+import { convertTimestampToAMorPMTime, formatTime } from '@/utils/formatDate';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { WatchTitle } from './WatchTitle';
@@ -132,13 +132,16 @@ export const Timer = ({ id }:{id:string}) => {
                     <Text style={{ fontSize:12, textAlign:"right" }}>
                           temporizador
                     </Text>
+                    <Text style={{ fontSize:12, textAlign:"right" }}>
+                      { formatTime(initialTime) }
+                    </Text>
                     <Text style={{...commonStyles.watchTime}}>
                       { formatTime(time) }
                     </Text>
                     {
-                      running && 
+                      (running || time==0) && 
                         <Text style={{ fontSize:12 }}>
-                          Finaliza a las { convertTimestampToMilitaryTime((Math.floor(Date.now())/1000) + time) }
+                          { time>0?"Finaliza":"finalizo" } a las { convertTimestampToAMorPMTime((Math.floor(Date.now())/1000) + time) }
                         </Text>
                     }
                   </View>
