@@ -61,7 +61,7 @@ export const Timer = ({ id }:{id:string}) => {
     clearInterval(intervalRef.current || undefined);
     setTime(initialTime); // Reset to the initial time
     setRunning(false);
-    initialReloadState.updateWatch(id, { current_time: initialTime, start_time: 0, pause_time: 0, timer_initial_time: initialTime, is_running: false, title: title, type:"chrono" })
+    initialReloadState.updateWatch(id, { current_time: initialTime, start_time: 0, pause_time: 0, timer_initial_time: initialTime, is_running: false, title: title, type:"timer" })
   };
 
   // update store on first load 
@@ -158,9 +158,12 @@ export const Timer = ({ id }:{id:string}) => {
                                 <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>Reiniciar</Text>
                             </TouchableOpacity>
                           }
-                          <TouchableOpacity onPress={startTimer} style={{ ...commonStyles.watchButton, backgroundColor:"#2501c9" }}>
-                              <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>{time===initialTime?"Iniciar":"continuar"}</Text>
-                          </TouchableOpacity>
+                          {
+                            time !== 0 &&
+                            <TouchableOpacity onPress={startTimer} style={{ ...commonStyles.watchButton, backgroundColor:"#2501c9" }}>
+                                <Text style={{ ...commonStyles.watchButtonText, color:"#fefefe" }}>{time===initialTime?"Iniciar":"continuar"}</Text>
+                            </TouchableOpacity>
+                          }
                         </>
                     }
                   </View>
