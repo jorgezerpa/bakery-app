@@ -2,9 +2,12 @@ import { useInitialReloadStateStore } from '@/store/InitialReloadState';
 import { useSettingsStore } from '@/store/settingsStore';
 import { commonStyles } from '@/styles/common';
 import { convertTimestampToAMorPMTime, formatTime } from '@/utils/formatDate';
+import { useAudioPlayer } from 'expo-audio';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { WatchTitle } from './WatchTitle';
+
+const audioSource = require('./../../assets/sounds/beep-3s.mp3');
 
 const TEXTS = {
   "ES": {
@@ -32,6 +35,8 @@ const TEXTS = {
 }
 
 export const Timer = ({ id }:{id:string}) => {
+  const player = useAudioPlayer(audioSource);
+  
   const initialReloadState = useInitialReloadStateStore()
   const [initialTime, setInitialTime] = useState(0);
   const [virtualInitialTime, setVirtualInitialTime] = useState({
@@ -54,6 +59,8 @@ export const Timer = ({ id }:{id:string}) => {
         setTime(remainingTime >= 0 ? remainingTime : 0); // Ensure time doesn't go negative
         if (remainingTime <= 0) {
           pauseTimer();
+          player.seekTo(0);
+          player.play();
         }
       }, 1000);
       setRunning(true);
@@ -69,6 +76,8 @@ export const Timer = ({ id }:{id:string}) => {
         setTime(remainingTime >= 0 ? remainingTime : 0); // Ensure time doesn't go negative
         if (remainingTime <= 0) {
           pauseTimer();
+          player.seekTo(0);
+          player.play();
         }
       }, 1000);
       setRunning(true);
@@ -80,6 +89,10 @@ export const Timer = ({ id }:{id:string}) => {
     setRunning(false);
     const _pauseTime = Math.floor(Date.now())/1000
     initialReloadState.updateWatch(id, { current_time: time, start_time: startTimeRef.current, pause_time: _pauseTime, timer_initial_time: initialTime, is_running: false, title: title, type:"timer" })
+    if(time==0){
+      player.seekTo(0);
+      player.play();
+    }
   };
 
   const resetTimer = () => {
@@ -153,7 +166,7 @@ export const Timer = ({ id }:{id:string}) => {
           {
             initialTime !== 0 && (
               <View style={{ justifyContent:"space-between", alignItems:"flex-end" }}>
-                  <View style={{ backgroundColor:"white" }}>
+                  <View style={{ backgroundColor:time>0?"white":"#ff746c", borderRadius:10 }}>
                     {/* <Text style={{ fontSize:12, textAlign:"right" }}>
                           {TEXTS[settingsStore.language].timer}
                     </Text> */}
@@ -166,7 +179,9 @@ export const Timer = ({ id }:{id:string}) => {
                     {
                       (running || time==0) && 
                         <Text style={{ fontSize:12 }}>
-                          { time>0?TEXTS[settingsStore.language].finishAt:TEXTS[settingsStore.language].finishedAt } { convertTimestampToAMorPMTime((Math.floor(Date.now())/1000) + time) }
+                          { time>0?TEXTS[settingsStore.language].finishAt:TEXTS[settingsStore.language].finishedAt } 
+                          { time>0&&convertTimestampToAMorPMTime((Math.floor(Date.now())/1000) + time) }
+                          { time==0&&convertTimestampToAMorPMTime(initialReloadState.timers[id].start_time) } {/**Remember: start_time in this case is the end_time|goal_time */}
                         </Text>
                     }
                   </View>
